@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol StarredRepositoriesHomeViewModelDelegate : AnyObject {
+protocol StarredRepositoriesViewModelDelegate : AnyObject {
     func didRecieveData()
 }
 
@@ -17,18 +17,50 @@ class StarredRepositoriesViewModel {
     
     private var starredRepoModels = [StarredRepoModel]()
     
-    weak var delegate : StarredRepositoriesHomeViewModelDelegate?
+    weak var delegate : StarredRepositoriesViewModelDelegate?
     
-    func getData() {
+    var pageCount = 1
+    
+    var isPaginating = false
+    
+    var requestDate : String {
+        let currentDate = Date()
+        let dateFormatter = DateFormatter()
+        dateFormatter.timeZone = .current
+        dateFormatter.locale = .current
+        dateFormatter.dateFormat = "YYYY-MM-d"
+        guard let fromDate = Calendar.current.date(byAdding: .day, value: -31, to: currentDate) else {
+            return ""
+        }
+        return dateFormatter.string(from: fromDate)
+    }
+    
+    func getStarredRepoData() {
         // fetching for a specific date
-        
-        let requestTime = getRequestTime()
-        NetworkManager.networkManager.fetchData(with: "https://api.github.com/search/repositories?q=created:%3E\(requestTime)&sort=stars&order=desc") { result in
+        NetworkManager.networkManager.fetchData(with: "https://api.github.com/search/repositories?q=created:%3E\(requestDate)&sort=stars&order=desc&per_page=100&page=\(pageCount)") { [weak self] result in
             switch result {
             case .success(let starredRepoData):
-                print(starredRepoData)
-                self.starredRepoModels = starredRepoData
-                self.processFetchedData(repos: self.starredRepoModels)
+                self?.starredRepoModels = starredRepoData
+                self?.processFetchedRepoData(repos: self?.starredRepoModels)
+            case .failure(let error):
+                print(error)
+            }
+        }
+    }
+    
+    func loadMoreData() {
+        //Pagination
+        guard isPaginating == false else {
+            return
+        }
+        pageCount += 1
+        isPaginating = true
+        NetworkManager.networkManager.fetchData(with: "https://api.github.com/search/repositories?q=created:%3E\(requestDate)&sort=stars&order=desc&per_page=100&page=\(pageCount)") { [weak self] result in
+            switch result {
+            case .success(let starredRepoData):
+                self?.starredRepoModels.append(contentsOf: starredRepoData)
+                self?.processFetchedRepoData(repos: self?.starredRepoModels)
+                self?.isPaginating = false
             case .failure(let error):
                 print(error)
             }
@@ -56,76 +88,59 @@ class StarredRepositoriesViewModel {
         return calculateTime(postTime: timePostedSecondsSince1970, currentTime: currentTime)
     }
     
-    //TODO
-    func getRequestTime()-> String {
-        let date = Date()
-        let dateFormatter = DateFormatter()
-        dateFormatter.timeZone = .current
-        dateFormatter.locale = .current
-        dateFormatter.dateFormat = "YYYY-MM-d"
-        
-        guard let fromDate = Calendar.current.date(byAdding: .day, value: -30, to: date) else {
-            return ""
-        }
-        print(" here \(dateFormatter.string(from: fromDate))")
-        return dateFormatter.string(from: fromDate)
-   
-    }
-    
     func calculateTime(postTime : Double , currentTime : TimeInterval) -> String {
         
         let postedSinceTimeInSeconds = currentTime - postTime
         
         switch postedSinceTimeInSeconds {
         case 0...59 :
-            return " now"
+            return "now"
         case 60...3600 :
             let time = Int(postedSinceTimeInSeconds / 60)
             if time == 1 {
-                return " \(time) min ago"
+                return "\(time) min ago"
             }
-            return " \(time) mins ago"
+            return "\(time) mins ago"
         case 3600...86400 :
             let time = Int(postedSinceTimeInSeconds / 3600)
             if time == 1 {
-                return " \(time) hour ago"
+                return "\(time) hour ago"
             }
-            return" \(time) hours ago"
+            return"\(time) hours ago"
         case 86400...604800 :
             let time = Int(postedSinceTimeInSeconds / 86400)
             if time == 1 {
                 return "\(time) day ago"
             }
-            return" \(time) days ago"
+            return"\(time) days ago"
         case 604800...2419200 :
             let time = Int(postedSinceTimeInSeconds / 604800)
             if time == 1 {
                 return " \(time) week ago"
             }
-            return " \(time) weeks ago"
+            return "\(time) weeks ago"
         case 2419200...29030400 :
             let time = Int(postedSinceTimeInSeconds / 2419200)
             if time == 1 {
                 return "\(time) month ago"
             }
-            return " \(time) months ago"
+            return "\(time) months ago"
         case 29030400... :
             let time = Int(postedSinceTimeInSeconds / 29030400)
             if time == 1 {
                 return "\(time) year ago"
             }
-            return" \(time) years ago"
+            return"\(time) years ago"
         default:
             return "no time"
         }
     }
     
-    func processFetchedData(repos : [StarredRepoModel]) {
+    func processFetchedRepoData(repos : [StarredRepoModel]?) {
         
         var viewModels = [StarredRepositoryCellViewModel]()
         
         for repo in starredRepoModels {
-            
             let cellVM = StarredRepositoryCellViewModel(starredRepoName: repo.name ?? "", starredRepoDescription: repo.description ?? "No description Available", starredRepoStarsCount: repo.stargazers_count ?? 0 , starredRepoIssuesCount: repo.open_issues_count ?? 0, starredRepoDateOfCreation: parseDateFormat(dateAsString: repo.created_at ?? "") ?? "", imageURL: repo.owner.avatar_url ?? "")
             viewModels.append(cellVM)
         }
@@ -140,9 +155,5 @@ class StarredRepositoriesViewModel {
     func getCellViewModel( at indexPath: IndexPath ) -> StarredRepositoryCellViewModel {
         return starredReposCellViewModels[indexPath.row]
     }
-    
-//    func createCellViewModel(starredRepoModel : StarredRepoModel) -> StarredRepositoryCellViewModel {
-//
-//
-//    }
+
 }

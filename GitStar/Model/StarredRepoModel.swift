@@ -7,18 +7,6 @@
 
 import Foundation
 
-struct StarredRepoData : Decodable {
-
-    let total_count : Int
-    let incomplete_results : Bool
-    let items : [StarredRepoModel]
-    
-}
-
-struct OwnerModel : Decodable {
-    let avatar_url : String?
-}
-
 struct StarredRepoModel : Decodable {
     
     let name : String?
@@ -27,6 +15,9 @@ struct StarredRepoModel : Decodable {
     let open_issues_count : Int?
     let created_at : String?
     let owner : OwnerModel
+    
 }
+
+
 
 

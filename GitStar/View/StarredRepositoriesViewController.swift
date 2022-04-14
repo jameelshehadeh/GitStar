@@ -26,23 +26,19 @@ class StarredRepositoriesViewController: UIViewController {
     }
     
     func updateUI(){
-        
         viewModel.delegate = self
-        viewModel.getData()
-    
+        viewModel.getStarredRepoData()
         tableView.delegate = self
         tableView.dataSource = self
-        
         view.addSubview(tableView)
     }
     
     override func viewDidLayoutSubviews() {
         tableView.frame = view.bounds
     }
-    
 }
 
-//MARK: - TableView DataSource methods
+//MARK: - TableView DataSource/Delegate methods
 
 extension StarredRepositoriesViewController : UITableViewDelegate , UITableViewDataSource {
     
@@ -60,15 +56,29 @@ extension StarredRepositoriesViewController : UITableViewDelegate , UITableViewD
     func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
-   
+
 }
 
 //MARK: -  StarredRepositoriesHomeViewDelegate
 
-extension StarredRepositoriesViewController : StarredRepositoriesHomeViewModelDelegate {
+extension StarredRepositoriesViewController : StarredRepositoriesViewModelDelegate {
     func didRecieveData() {
         DispatchQueue.main.async {
             self.tableView.reloadData()
+            
+        }
+    }
+}
+
+//MARK: - UIScrollViewDelegate
+extension StarredRepositoriesViewController : UIScrollViewDelegate {
+    
+    //Pagination
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        
+        let position = scrollView.contentOffset.y
+        if position + tableView.frame.height == tableView.contentSize.height || position + tableView.frame.height > tableView.contentSize.height  {
+            viewModel.loadMoreData()
         }
     }
 }

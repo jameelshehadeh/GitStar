@@ -18,6 +18,8 @@
 		FA04682928042B93005EB580 /* GitStarUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA04682828042B93005EB580 /* GitStarUITestsLaunchTests.swift */; };
 		FA04683A280431DC005EB580 /* StarredRepoTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA046838280431DC005EB580 /* StarredRepoTableViewCell.swift */; };
 		FA04683B280431DC005EB580 /* StarredRepoTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = FA046839280431DC005EB580 /* StarredRepoTableViewCell.xib */; };
+		FA7EED6D28080977008E4441 /* OwnerModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA7EED6C28080977008E4441 /* OwnerModel.swift */; };
+		FA7EED6F280809A5008E4441 /* StarredRepoDataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA7EED6E280809A5008E4441 /* StarredRepoDataModel.swift */; };
 		FA8A544B280450720017DAE7 /* StarredRepoModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA8A544A280450720017DAE7 /* StarredRepoModel.swift */; };
 		FA8A544E280453220017DAE7 /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA8A544D280453220017DAE7 /* NetworkManager.swift */; };
 		FA8A5451280570D90017DAE7 /* StarredRepositoriesViewModel .swift in Sources */ = {isa = PBXBuildFile; fileRef = FA8A5450280570D90017DAE7 /* StarredRepositoriesViewModel .swift */; };
@@ -57,6 +59,8 @@
 		FA04682828042B93005EB580 /* GitStarUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitStarUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		FA046838280431DC005EB580 /* StarredRepoTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StarredRepoTableViewCell.swift; sourceTree = "<group>"; };
 		FA046839280431DC005EB580 /* StarredRepoTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = StarredRepoTableViewCell.xib; sourceTree = "<group>"; };
+		FA7EED6C28080977008E4441 /* OwnerModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OwnerModel.swift; sourceTree = "<group>"; };
+		FA7EED6E280809A5008E4441 /* StarredRepoDataModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StarredRepoDataModel.swift; sourceTree = "<group>"; };
 		FA8A544A280450720017DAE7 /* StarredRepoModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StarredRepoModel.swift; sourceTree = "<group>"; };
 		FA8A544D280453220017DAE7 /* NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
 		FA8A5450280570D90017DAE7 /* StarredRepositoriesViewModel .swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StarredRepositoriesViewModel .swift"; sourceTree = "<group>"; };
@@ -145,6 +149,8 @@
 			isa = PBXGroup;
 			children = (
 				FA8A544A280450720017DAE7 /* StarredRepoModel.swift */,
+				FA7EED6C28080977008E4441 /* OwnerModel.swift */,
+				FA7EED6E280809A5008E4441 /* StarredRepoDataModel.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -317,8 +323,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FA7EED6D28080977008E4441 /* OwnerModel.swift in Sources */,
 				FA8A544E280453220017DAE7 /* NetworkManager.swift in Sources */,
 				FA04680A28042B92005EB580 /* StarredRepositoriesViewController.swift in Sources */,
+				FA7EED6F280809A5008E4441 /* StarredRepoDataModel.swift in Sources */,
 				FA8A545328059AA40017DAE7 /* StarredRepositoryCellViewModel.swift in Sources */,
 				FA04680628042B92005EB580 /* AppDelegate.swift in Sources */,
 				FA04680828042B92005EB580 /* SceneDelegate.swift in Sources */,

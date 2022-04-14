@@ -33,10 +33,10 @@ class NetworkManager {
         
     }
     
-    func parseJSON(with data : Data) -> StarredRepoData? {
+    func parseJSON(with data : Data) -> StarredRepoDataModel? {
         
         do {
-            let decodedData = try JSONDecoder().decode(StarredRepoData.self, from: data)
+            let decodedData = try JSONDecoder().decode(StarredRepoDataModel.self, from: data)
             return decodedData
         }
         

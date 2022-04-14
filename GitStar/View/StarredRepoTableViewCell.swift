@@ -26,17 +26,15 @@ class StarredRepoTableViewCell: UITableViewCell {
             repoDescriptionLabel.text = starredRepoCellViewModel?.starredRepoDescription
             repoStarsLabel.text = "Stars: \(starsCount)"
             repoIssuesLabel.text = "Issues: \(issuesCount)"
-            repoDateOfCreationLabel.text = "Submitted\(dateOfCreation) by \(repoName)"
+            repoDateOfCreationLabel.text = "Submitted \(dateOfCreation) by \(repoName)"
             
-            downloadImage(from: imageURL) { result in
+            downloadImage(from: imageURL) { [weak self] result in
                 switch result {
                 case .success(let image):
-                    print(imageURL)
                     DispatchQueue.main.async {
-                        self.repoOwnerImageView.image = image
+                        self?.repoOwnerImageView.image = image
                     }
                 case .failure(_):
-                    print(imageURL)
                     break
                 }
             }
