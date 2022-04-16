@@ -1,0 +1,6 @@
+framework module Pods_GitStarTests {
+  umbrella header "Pods-GitStarTests-umbrella.h"
+
+  export *
+  module * { export * }
+}

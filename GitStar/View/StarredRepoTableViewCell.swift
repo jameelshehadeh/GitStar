@@ -6,7 +6,7 @@
 //
 
 import UIKit
-import SwiftUI
+import SDWebImage
 
 class StarredRepoTableViewCell: UITableViewCell {
     
@@ -19,7 +19,7 @@ class StarredRepoTableViewCell: UITableViewCell {
     
     var starredRepoCellViewModel : StarredRepositoryCellViewModel? {
         didSet {
-            guard let repoName = starredRepoCellViewModel?.starredRepoName , let dateOfCreation = starredRepoCellViewModel?.starredRepoDateOfCreation , let starsCount = starredRepoCellViewModel?.starredRepoStarsCount , let issuesCount = starredRepoCellViewModel?.starredRepoIssuesCount , let imageURL = starredRepoCellViewModel?.imageURL else {
+            guard let repoName = starredRepoCellViewModel?.starredRepoName , let dateOfCreation = starredRepoCellViewModel?.starredRepoDateOfCreation , let starsCount = starredRepoCellViewModel?.starredRepoStarsCount , let issuesCount = starredRepoCellViewModel?.starredRepoIssuesCount , let imageURLString = starredRepoCellViewModel?.imageURL else {
                 return
             }
             repoNameLabel.text = starredRepoCellViewModel?.starredRepoName
@@ -28,59 +28,34 @@ class StarredRepoTableViewCell: UITableViewCell {
             repoIssuesLabel.text = "Issues: \(issuesCount)"
             repoDateOfCreationLabel.text = "Submitted \(dateOfCreation) by \(repoName)"
             
-            downloadImage(from: imageURL) { [weak self] result in
-                switch result {
-                case .success(let image):
-                    DispatchQueue.main.async {
-                        self?.repoOwnerImageView.image = image
-                    }
-                case .failure(_):
-                    break
-                }
-            }
-        }
-    }
-
-    func downloadImage(from URLString : String , completion : @escaping (Result<UIImage,Error>)->Void) {
-        
-        guard let imageURL = URL(string: URLString) else {
-            return
-        }
-        
-        URLSession.shared.dataTask(with: imageURL) { data , _ , error in
-            guard error == nil , let data = data else {
+            guard let imageURL = URL(string: imageURLString) else {
                 return
             }
-            // got data
-            guard let image = UIImage(data: data) else {
-                return
-            }
-            completion(.success(image))
-        }.resume()
+            repoOwnerImageView.sd_setImage(with: imageURL, placeholderImage: UIImage(systemName: "person.circle.fill"))
+        }
     }
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        // Initialization code
         repoDateOfCreationLabel.adjustsFontSizeToFitWidth = true
         repoStarsLabel.adjustsFontSizeToFitWidth = true
         repoIssuesLabel.adjustsFontSizeToFitWidth = true
         repoOwnerImageView.layer.cornerRadius = repoOwnerImageView.frame.width/2
+        configureCellUI()
     }
     
+    // Configuring UITableViewCell appearance
     func configureCellUI(){
-        
         repoStarsLabel.backgroundColor = .systemGreen
-        repoStarsLabel.layer.cornerRadius = 8
+        repoIssuesLabel.backgroundColor = .systemGreen
+        repoStarsLabel.layer.cornerRadius = 6
+        repoIssuesLabel.layer.cornerRadius = 6
+        repoStarsLabel.layer.masksToBounds = true
+        repoIssuesLabel.layer.masksToBounds = true
         repoStarsLabel.textColor = .white
-    
+        repoIssuesLabel.textColor = .white
     }
-
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-        // Configure the view for the selected state
-    }
-    
+        
     static func nibName()-> UINib {
         return UINib(nibName: "StarredRepoTableViewCell", bundle: nil)
     }

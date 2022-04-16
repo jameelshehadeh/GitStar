@@ -9,6 +9,7 @@ import Foundation
 
 protocol StarredRepositoriesViewModelDelegate : AnyObject {
     func didRecieveData()
+    func didFailRecievingData(error : Error)
 }
 
 class StarredRepositoriesViewModel {
@@ -35,22 +36,25 @@ class StarredRepositoriesViewModel {
         return dateFormatter.string(from: fromDate)
     }
     
+    // Fetching the most starred repos in the last 30 days for the current date
     func getStarredRepoData() {
-        // fetching for a specific date
         NetworkManager.networkManager.fetchData(with: "https://api.github.com/search/repositories?q=created:%3E\(requestDate)&sort=stars&order=desc&per_page=100&page=\(pageCount)") { [weak self] result in
             switch result {
             case .success(let starredRepoData):
                 self?.starredRepoModels = starredRepoData
                 self?.processFetchedRepoData(repos: self?.starredRepoModels)
             case .failure(let error):
-                print(error)
+                self?.delegate?.didFailRecievingData(error: error)
             }
         }
     }
     
+    //MARK: - Pagination
+    
+    // Fetching the next page for the most starred repos
     func loadMoreData() {
-        //Pagination
-        guard isPaginating == false else {
+       
+        guard isPaginating == false , !starredRepoModels.isEmpty else {
             return
         }
         pageCount += 1
@@ -62,18 +66,18 @@ class StarredRepositoriesViewModel {
                 self?.processFetchedRepoData(repos: self?.starredRepoModels)
                 self?.isPaginating = false
             case .failure(let error):
-                print(error)
+                self?.delegate?.didFailRecievingData(error: error)
             }
         }
     }
     
+    // Formatting the fetched date for each starred repository
     func parseDateFormat(dateAsString : String) -> String? {
         
         let dateFormatter = DateFormatter()
         dateFormatter.locale = .current
         dateFormatter.timeZone = .current
         dateFormatter.dateFormat = "YYYY-M-d-H:m:sZ"
-        
         let dateSubstrings = dateAsString.split(separator: "T")
         
         let dateFirstPart = dateSubstrings[0] + "-" + dateSubstrings[1]
@@ -81,16 +85,17 @@ class StarredRepositoriesViewModel {
         guard let formattedDate = dateFormatter.date(from: String(dateFirstPart)) else {
             return nil
         }
-        
+    
         let date = formattedDate.timeIntervalSince1970
         let timePostedSecondsSince1970 = Double(date)
         let currentTime = Date().timeIntervalSince1970
-        return calculateTime(postTime: timePostedSecondsSince1970, currentTime: currentTime)
+        return calculateTime(repoCreatedTime: timePostedSecondsSince1970, currentTime: currentTime)
     }
     
-    func calculateTime(postTime : Double , currentTime : TimeInterval) -> String {
+    // Calculating the repository's time since it was created
+    func calculateTime(repoCreatedTime : Double , currentTime : TimeInterval) -> String {
         
-        let postedSinceTimeInSeconds = currentTime - postTime
+        let postedSinceTimeInSeconds = currentTime - repoCreatedTime
         
         switch postedSinceTimeInSeconds {
         case 0...59 :
@@ -136,8 +141,8 @@ class StarredRepositoriesViewModel {
         }
     }
     
+    // Creating CellViewModels from the fetched Starred repositories
     func processFetchedRepoData(repos : [StarredRepoModel]?) {
-        
         var viewModels = [StarredRepositoryCellViewModel]()
         
         for repo in starredRepoModels {
@@ -148,10 +153,12 @@ class StarredRepositoriesViewModel {
         delegate?.didRecieveData()
     }
     
+    // Returning numberOfCells for the TableView
     func numberOfCells()-> Int {
         return starredReposCellViewModels.count
     }
-
+    
+    // Returning cellModel for each cell in the TableView
     func getCellViewModel( at indexPath: IndexPath ) -> StarredRepositoryCellViewModel {
         return starredReposCellViewModels[indexPath.row]
     }
