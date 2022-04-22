@@ -13,15 +13,23 @@ enum NetworkManagerErrors : Error {
     case failedToParseJSON
 }
 
-class NetworkManager {
+enum Endpoint : String {
+    case search = "search"
+    case repsitories = "repositories"
+}
+
+protocol NetworkManagerProtocol {
+    func fetchData(with url : String , completion : @escaping (Result<[StarredRepoModel],Error>) -> Void)
     
-    static let networkManager = NetworkManager()
+}
+
+class NetworkManager : NetworkManagerProtocol {
     
     // Fetching StarredRepos data
     func fetchData(with url : String , completion : @escaping (Result<[StarredRepoModel],Error>) -> Void) {
-        
+    
         guard let url = URL(string: url) else {
-            print("error creating URL")
+            completion(.failure(NetworkManagerErrors.failedFetchData))
             return
         }
         
@@ -35,6 +43,7 @@ class NetworkManager {
                 return
             }
             completion(.success(decodedData.items))
+            
         }.resume()
         
     }
@@ -53,5 +62,3 @@ class NetworkManager {
     }
     
 }
-
-

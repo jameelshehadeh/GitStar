@@ -17,7 +17,3 @@ struct StarredRepoModel : Decodable {
     let owner : OwnerModel
     
 }
-
-
-
-

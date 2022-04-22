@@ -15,5 +15,5 @@ class Alerts {
         alert.addAction(UIAlertAction(title: "Dismiss", style: .cancel))
         return alert
     }
-    
+
 }

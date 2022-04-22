@@ -15,7 +15,7 @@ class StarredRepositoriesViewController: UIViewController {
     
     private let tableView : UITableView = {
         let tableView = UITableView()
-        tableView.register(StarredRepoTableViewCell.nibName(), forCellReuseIdentifier: "StarredRepoCell")
+        tableView.register(StarredRepoTableViewCell.nibName(), forCellReuseIdentifier: StringConstants.StarredRepoTableViewCellIdentifier)
         tableView.rowHeight = 157
         return tableView
     }()
@@ -27,7 +27,7 @@ class StarredRepositoriesViewController: UIViewController {
     
     func updateUI(){
         viewModel.delegate = self
-        viewModel.getStarredRepoData()
+        viewModel.fetchStarredRepoData()
         tableView.delegate = self
         tableView.dataSource = self
         view.addSubview(tableView)
@@ -61,7 +61,9 @@ extension StarredRepositoriesViewController : UITableViewDelegate , UITableViewD
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "StarredRepoCell", for: indexPath) as! StarredRepoTableViewCell
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: StringConstants.StarredRepoTableViewCellIdentifier, for: indexPath) as? StarredRepoTableViewCell else {
+            return UITableViewCell()
+        }
         cell.selectionStyle = .none
         let cellViewModel = viewModel.getCellViewModel(at: indexPath)
         cell.starredRepoCellViewModel = cellViewModel

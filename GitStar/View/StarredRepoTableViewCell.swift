@@ -57,9 +57,7 @@ class StarredRepoTableViewCell: UITableViewCell {
     }
         
     static func nibName()-> UINib {
-        return UINib(nibName: "StarredRepoTableViewCell", bundle: nil)
+        return UINib(nibName: StringConstants.starredRepoTableViewCellnibName, bundle: nil)
     }
     
 }
- 
- 
